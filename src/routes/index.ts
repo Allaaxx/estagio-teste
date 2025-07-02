@@ -1,14 +1,10 @@
 import { Router } from "express";
+import { getHome, getFilmes, postFilme } from "../controllers/filmesController";
 
 const router = Router();
-const { filmes } = require("../database");
 
-router.get("/", (req, res) => {
-  res.json({ message: "Welcome to the API!" });
-});
-
-router.get("/filmes", (req, res) => {
-  res.json(filmes);
-});
+router.get("/", getHome);
+router.get("/filmes", getFilmes);
+router.post("/filmes", postFilme);
 
 export { router };
