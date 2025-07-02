@@ -1,22 +1,5 @@
-import { dir } from "console";
-import { Request, Response } from "express";
-const { filmes } = require("../database");
-
-export const getHome = (req: Request, res: Response) => {
-  res.json({ message: "Bem vindo a API, por Allan Rodrigues Alves de Oliveira" });
-};
-
-export const getFilmes = (req: Request, res: Response) => {
-  res.json(filmes);
-};
-
-export const postFilme = (req: Request, res: Response) => {
-  const novoFilme = req.body;
-  filmes.push(novoFilme);
-  res.status(201).json(novoFilme);
-};
-
-function parseFilme(filme: any) {
+// Função que transforma (parseia) um filme para o formato desejado
+export function parseFilme(filme: any) {
   function parseValor(valor: string): number {
     valor = valor.replace(/[^\d,.]/g, '').replace(',', '.');
     if (valor.includes('bilh')) {
@@ -34,7 +17,10 @@ function parseFilme(filme: any) {
 
   let premiacaoMaior = null;
   if (Array.isArray(filme.premios) && filme.premios.length > 0) {
-    premiacaoMaior = filme.premios.reduce((max: any, atual: any) => atual.relevancia > max.relevancia ? atual : max, filme.premios[0]);
+    premiacaoMaior = filme.premios.reduce(
+      (max: any, atual: any) => atual.relevancia > max.relevancia ? atual : max,
+      filme.premios[0]
+    );
   }
 
   const duracaoSegundos = (filme.duracao || 0) * 60;
@@ -63,9 +49,3 @@ function parseFilme(filme: any) {
     sinopse: sinopseEscolhida
   };
 }
-
-export const parsedFilmes = (req: Request, res: Response) => {
-  const filmesParseados = filmes.map(parseFilme);
-  res.json(filmesParseados);
-};
-

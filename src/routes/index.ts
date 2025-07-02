@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { getHome, getFilmes, postFilme, parsedFilmes,  } from "../controllers/filmesController";
+import { getHome } from "../controllers/getHome";
+import { getFilmes } from "../controllers/getFilmes";
+import { postFilme } from "../controllers/postFilme";
+import { parsedFilmes } from "../controllers/parsedFilmes";
 
 const router = Router();
 
