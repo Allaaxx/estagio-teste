@@ -10,7 +10,7 @@
 2. **Estruturação do Código**
    - Separação em camadas: database, controllers, routes e server.
    - Dados dos filmes em `src/database/index.ts`.
-   - Lógica de negócio em `src/controllers/filmesController.ts`.
+   - Lógica de negócio em `src/controllers`.
    - Rotas em `src/routes/index.ts`.
    - Inicialização do servidor em `src/server/Server.ts` e `src/index.ts`.
 
@@ -25,7 +25,7 @@
      - Remover propriedades `locacoes`, `poster` e `trailer`.
 
 4. **Testes**
-   - Testes realizados via Postman e navegador.
+   - Testes realizados via Insomnia e navegador.
    - Conferência do retorno da rota `/filmes` com o exemplo esperado.
 
 ## Exemplo de resposta da API
@@ -46,6 +46,8 @@
   "sinopse": "Um chefão da máfia tenta transferir o controle de seu império clandestino para seu filho relutante."
 }
 ```
+
+que inclusive eu quase caí na pegadinha do 2bi - 6mi = 1.4bi, que no caso está errado no documento orientador, já que o certo seria 1.994bi.
 
 ## Observações
 - O projeto está pronto para rodar com `npm run dev` ou `npm start` (após build).
