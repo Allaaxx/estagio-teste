@@ -1,27 +1,38 @@
 // Função que transforma (parseia) um filme para o formato desejado
 export function parseFilme(filme: any) {
-  function parseValor(valor: string): number {
-    valor = valor.replace(/[^\d,.]/g, '').replace(',', '.');
-    if (valor.includes('bilh')) {
-      return parseFloat(valor) * 1_000_000_000;
+  // Função auxiliar para extrair valor numérico e unidade (milhões/bilhões)
+  function extraiValorEUnidade(valor: string) {
+    if (!valor) return { numero: 0, unidade: "" };
+    let unidade = "";
+    let valorLimpo = valor.toLowerCase();
+    if (valorLimpo.includes('bilh')) {
+      unidade = 'bilhões';
+    } else if (valorLimpo.includes('milh')) {
+      unidade = 'milhões';
     }
-    if (valor.includes('milh')) {
-      return parseFloat(valor) * 1_000_000;
-    }
-    return parseFloat(valor);
+    valorLimpo = valorLimpo.replace(/[^\d,.]/g, '').replace(',', '.');
+    return { numero: parseFloat(valorLimpo), unidade };
   }
 
-  const orcamentoNum = parseValor(filme.orcamento || '0');
-  const bilheteriaNum = parseValor(filme.bilheteria || '0');
-  const lucro = bilheteriaNum - orcamentoNum;
+  const { numero: orcamentoNum, unidade: unidadeOrc } = extraiValorEUnidade(filme.orcamento || '0');
+  const { numero: bilheteriaNum, unidade: unidadeBil } = extraiValorEUnidade(filme.bilheteria || '0');
+  // Se as unidades forem diferentes, prioriza a unidade da bilheteria
+  let lucroNum = bilheteriaNum - orcamentoNum;
+  let lucroStr = '';
+  if (unidadeBil) {
+    // Exemplo: $1.4 bilhões
+    lucroStr = `$${lucroNum.toLocaleString('en-US', { maximumFractionDigits: 1 })} ${unidadeBil}`;
+  } else {
+    // Caso não tenha unidade, mostra só o valor
+    lucroStr = `$${lucroNum}`;
+  }
 
   let maiorPremiacao = null;
   if (Array.isArray(filme.premios) && filme.premios.length > 0) {
-    const premio = filme.premios.reduce(
+    maiorPremiacao = filme.premios.reduce(
       (max: any, atual: any) => atual.relevancia > max.relevancia ? atual : max,
       filme.premios[0]
-    );
-    maiorPremiacao = premio.nome;
+    ).nome;
   }
 
   const duracaoSegundos = (filme.duracao || 0) * 60;
@@ -47,8 +58,8 @@ export function parseFilme(filme: any) {
     diretor: filme.diretor,
     genero: filme.genero,
     duracaoSegundos,
-    notaIMDb,
-    lucro: lucro.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+    notaIMDb: notaIMDb ? Number(notaIMDb) : null,
+    lucro: lucroStr,
     maiorPremiacao,
     sinopse: sinopseEscolhida
   };
