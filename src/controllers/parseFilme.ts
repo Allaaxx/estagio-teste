@@ -15,12 +15,13 @@ export function parseFilme(filme: any) {
   const bilheteriaNum = parseValor(filme.bilheteria || '0');
   const lucro = bilheteriaNum - orcamentoNum;
 
-  let premiacaoMaior = null;
+  let maiorPremiacao = null;
   if (Array.isArray(filme.premios) && filme.premios.length > 0) {
-    premiacaoMaior = filme.premios.reduce(
+    const premio = filme.premios.reduce(
       (max: any, atual: any) => atual.relevancia > max.relevancia ? atual : max,
       filme.premios[0]
     );
+    maiorPremiacao = premio.nome;
   }
 
   const duracaoSegundos = (filme.duracao || 0) * 60;
@@ -36,16 +37,19 @@ export function parseFilme(filme: any) {
     const pt = filme.sinopse.find((s: any) => s.idioma === 'pt-br');
     const en = filme.sinopse.find((s: any) => s.idioma === 'en');
     sinopseEscolhida = pt?.texto || en?.texto || filme.sinopse[0]?.texto || '';
+  } else if (typeof filme.sinopse === 'string') {
+    sinopseEscolhida = filme.sinopse;
   }
 
-  const { locacoes, poster, trailer, ...rest } = filme;
-
   return {
-    ...rest,
-    lucro: lucro.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
-    premiacaoMaior,
+    titulo: filme.titulo,
+    ano: filme.ano,
+    diretor: filme.diretor,
+    genero: filme.genero,
     duracaoSegundos,
     notaIMDb,
+    lucro: lucro.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+    maiorPremiacao,
     sinopse: sinopseEscolhida
   };
 }
