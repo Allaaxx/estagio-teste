@@ -1,55 +1,67 @@
-# Relatório do Teste Backend Node.js - API de Filmes
+# API de Filmes – Teste Backend Node.js
 
-## Passos realizados
+## Visão Geral
 
-1. **Configuração do Projeto**
-   - Criação do projeto Node.js com TypeScript.
-   - Instalação das dependências: express, typescript, ts-node, @types/express, @types/node.
-   - Configuração do tsconfig.json para organizar o código.
+API desenvolvida em Node.js com TypeScript, seguindo boas práticas de arquitetura, tipagem e organização para o processo seletivo. O projeto consome dados de filmes de uma API externa, faz o parse conforme requisitos do teste e expõe uma única rota principal.
 
-2. **Estruturação do Código**
-   - Separação em camadas: database, controllers, routes e server.
-   - Dados dos filmes em `src/database/index.ts`.
-   - Lógica de negócio em `src/controllers`.
-   - Rotas em `src/routes/index.ts`.
-   - Inicialização do servidor em `src/server/Server.ts` e `src/index.ts`.
+## Configuração do Projeto
 
-3. **Implementação da API**
-   - Rota `/filmes` retorna todos os filmes parseados conforme os requisitos.
-   - Função `parseFilme` implementada para:
-     - Calcular lucro (bilheteria - orçamento) e formatar como string.
-     - Identificar a premiação de maior relevância.
-     - Converter duração para segundos.
-     - Pegar nota IMDb como string.
-     - Selecionar sinopse em pt-br, se não houver, em inglês, se não houver, qualquer uma.
-     - Remover propriedades `locacoes`, `poster` e `trailer`.
+- Projeto Node.js com TypeScript, organizado em camadas: `controllers`, `services`, `routes` e `server`.
+- Dependências principais: express, typescript, ts-node, node-fetch, @types/express, @types/node.
+- Configuração do `tsconfig.json` para garantir tipagem estrita e organização.
 
-4. **Testes**
-   - Testes realizados via Insomnia e navegador.
-   - Conferência do retorno da rota `/filmes` com o exemplo esperado.
+## Arquitetura e Organização
 
-## Exemplo de resposta da API
+- **Service**: `services/filmesService.ts` faz o fetch dos dados da API externa (AWS Lambda).
+- **Controller**: `controllers/getFilmes.ts` orquestra a busca e o parse dos filmes.
+- **Parse**: `controllers/parseFilme.ts` isola a lógica de transformação dos dados, com tipagem forte.
+- **Rota**: Apenas `/filmes` está exposta em `routes/index.ts`, retornando os dados já transformados.
+- **Server**: Inicialização em `src/server/Server.ts` e `src/index.ts`.
+
+## Regras de Negócio e Transformação
+
+- Lucro calculado (bilheteria - orçamento) e formatado como string.
+- Premiação de maior relevância identificada.
+- Duração convertida para segundos.
+- Nota IMDb retornada como string.
+- Sinopse prioriza pt-br, depois inglês, depois qualquer idioma.
+- Propriedades desnecessárias removidas: `locacoes`, `poster`, `trailer`.
+
+## Fluxo da API
+
+1. **Requisição para `/filmes`**
+2. Controller aciona o service para buscar os filmes na API externa (AWS Lambda).
+3. Cada filme é transformado pela função `parseFilme` para atender aos requisitos de negócio.
+4. Resposta retorna apenas os filmes já parseados.
+
+## Exemplo de Resposta
 
 ```json
 {
-  "titulo": "O Poderoso Chefão",
-  "ano": 1972,
-  "diretor": "Francis Ford Coppola",
-  "genero": ["Crime", "Drama"],
-  "duracaoSegundos": 10500,
-  "notaIMDb": "9.2",
-  "lucro": "R$ 1.994.000.000,00",
-  "premiacaoMaior": {
-    "nome": "Oscar de Melhor Filme",
-    "relevancia": 10
-  },
-  "sinopse": "Um chefão da máfia tenta transferir o controle de seu império clandestino para seu filho relutante."
+	"titulo": "O Poderoso Chefão",
+	"ano": 1972,
+	"diretor": "Francis Ford Coppola",
+	"genero": [
+		"Crime",
+		"Drama"
+	],
+	"duracaoSegundos": 10500,
+	"notaIMDb": 9.2,
+	"lucro": "$239 milhões",
+	"maiorPremiacao": "Oscar de Melhor Filme",
+	"sinopse": "Um chefão da máfia tenta transferir o controle de seu império clandestino para seu filho relutante."
 }
 ```
 
-que inclusive eu quase caí na pegadinha do 2bi - 6mi = 1.4bi, que no caso está errado no documento orientador, já que o certo seria 1.994bi.
+## Como rodar
+
+- Instale as dependências: `npm install`
+- Para desenvolvimento: `npm run dev`
+- Para produção: `npm run build` e depois `npm start`
 
 ## Observações
-- O projeto está pronto para rodar com `npm run dev` ou `npm start` (após build).
-- O código está comentado e organizado para fácil manutenção.
+
+- O projeto está pronto para rodar com `npm run dev` (desenvolvimento) ou `npm start` (após build).
+- Código limpo, sem logs ou comentários excessivos, seguindo boas práticas de arquitetura e tipagem.
+- README atualizado conforme a arquitetura final.
 - Qualquer dúvida, estou à disposição!
