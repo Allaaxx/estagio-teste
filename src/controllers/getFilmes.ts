@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
-const { filmes } = require("../database");
+import { getFilmesExternos } from "../services/filmesService";
+import { parseFilme } from "./parseFilme";
 
-/**
- * Controller responsável por retornar todos os filmes cadastrados (crus, sem parseamento).
- * Retorna o array completo de filmes conforme está no banco de dados local.
- */
-export const getFilmes = (req: Request, res: Response) => {
-  // Retorna todos os filmes cadastrados
-  res.json(filmes);
+export const getFilmes = async (req: Request, res: Response) => {
+  try {
+    const resposta = await getFilmesExternos();
+    const filmes = resposta.filmes;
+    const filmesParseados = filmes.map(parseFilme);
+    res.json(filmesParseados);
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao buscar ou processar filmes." });
+  }
 };
